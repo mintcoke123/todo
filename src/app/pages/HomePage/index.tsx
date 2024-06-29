@@ -2,6 +2,9 @@ import TodoInput from 'app/components/TodoInput';
 import TodoItem from 'app/components/TodoItem';
 import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTodoSlice } from 'store/todo';
+import { TodoListSelector } from 'store/todo/selectors';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -28,26 +31,9 @@ const Title = styled.h1`
 const TodoList = styled.div``;
 
 export function HomePage() {
-  const [todoList, setTodoList] = React.useState<ITodoItem[]>([
-    {
-      id: '1',
-      content: '첫번째 투두',
-      completed: true,
-      editing: false,
-    },
-    {
-      id: '2',
-      content: '첫번째 투두',
-      completed: false,
-      editing: false,
-    },
-    {
-      id: '3',
-      content: '첫번째 투두',
-      completed: true,
-      editing: false,
-    },
-  ]);
+  const { TodoActions } = useTodoSlice();
+  const todoList = useSelector(TodoListSelector);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -59,20 +45,30 @@ export function HomePage() {
         <Box>
           <Title>할 일</Title>
           <TodoInput
-            setTodoList={(todo: ITodoItem) => setTodoList([todo, ...todoList])}
+            addTodo={(content: string) =>
+              dispatch(TodoActions.addTodo(content))
+            }
           />
           <TodoList>
             {todoList.map(todo => (
-              <TodoItem todo={todo} />
+              <TodoItem
+                todo={todo}
+                checkTodo={() =>
+                  dispatch(TodoActions.checkTodo({ id: todo.id }))
+                }
+                editModeTodo={() =>
+                  dispatch(TodoActions.editModeTodo({ id: todo.id }))
+                }
+                editTodo={(content: string) =>
+                  dispatch(
+                    TodoActions.editTodo({ id: todo.id, content: content }),
+                  )
+                }
+                deleteTodo={() =>
+                  dispatch(TodoActions.deleteTodo({ id: todo.id }))
+                }
+              />
             ))}
-            <TodoItem
-              todo={{
-                id: '1',
-                completed: false,
-                content: '11',
-                editing: false,
-              }}
-            ></TodoItem>
           </TodoList>
         </Box>
       </Wrapper>

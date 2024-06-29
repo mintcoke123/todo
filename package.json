@@ -118,5 +118,8 @@
         "statements": 90
       }
     }
+  },
+  "devDependencies": {
+    "workbox-cli": "7.1.0"
   }
 }
